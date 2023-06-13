@@ -95,6 +95,45 @@ int sfz::Sfizz::getNumRegions() const noexcept
     return synth->synth.getNumRegions();
 }
 
+// 11.06.23 RJ
+const int sfz::Sfizz::getRegionID(std::string path) const noexcept
+{
+    return synth->synth.getRegionID(path);
+}
+
+bool sfz::Sfizz::playRegionByID(const int id) noexcept
+{
+    return synth->synth.playRegionByID(id);
+}
+
+bool sfz::Sfizz::stopRegionByID(const int id) noexcept
+{
+    return synth->synth.stopRegionByID(id);
+}
+
+bool sfz::Sfizz::getVoiceBufferCopy(const int p_region_id, float** p_out, int numOutputs, size_t numSamples) noexcept
+{
+    sfz::AudioSpan<float> bufferSpan{ p_out, static_cast<size_t>(numOutputs * 2), 0, numSamples };
+    return synth->synth.getVoiceBlockCopy(p_region_id, bufferSpan);
+}
+int sfz::Sfizz::getVoicePosition(const int p_region_id) const noexcept
+{
+    return synth->synth.getVoicePosition(p_region_id);
+}
+size_t sfz::Sfizz::getRegionLengthSamples(const int p_region_id) const noexcept
+{
+    return synth->synth.getRegionLengthSamples(p_region_id);
+}
+float sfz::Sfizz::getRegionLengthSeconds(const int p_region_id) const noexcept
+{
+    return synth->synth.getRegionLengthSeconds(p_region_id);
+}
+void sfz::Sfizz::setVoicePosition(const int p_region_id, const int p_frames) noexcept
+{
+    return synth->synth.setVoicePosition(p_region_id, p_frames);
+}
+// 
+
 int sfz::Sfizz::getNumGroups() const noexcept
 {
     return synth->synth.getNumGroups();
@@ -269,6 +308,12 @@ void sfz::Sfizz::renderBlock(float** buffers, size_t numSamples, int numOutputs)
 {
     sfz::AudioSpan<float> bufferSpan { buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
     synth->synth.renderBlock(bufferSpan);
+}
+
+void sfz::Sfizz::renderVoiceBlock(const int region_id, float** buffers, size_t numSamples, int numOutputs) noexcept
+{
+    sfz::AudioSpan<float> bufferSpan{ buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
+    synth->synth.renderVoiceBlock(region_id, bufferSpan);
 }
 
 int sfz::Sfizz::getNumActiveVoices() const noexcept

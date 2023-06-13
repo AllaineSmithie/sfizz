@@ -263,6 +263,8 @@ struct Voice::Impl
     int samplesPerBlock_ { config::defaultSamplesPerBlock };
     float sampleRate_ { config::defaultSampleRate };
 
+    AudioBuffer<float, 2> copyBuffer;
+
     Resources& resources_;
 
     std::vector<FilterHolder> filters_;
@@ -370,7 +372,7 @@ Voice& Voice::operator=(Voice&& other) noexcept {
 }
 
 Voice::Impl::Impl(int voiceNumber, Resources& resources)
-: id_ { voiceNumber }, stateListener_(nullptr), resources_(resources)
+: id_ { voiceNumber }, stateListener_(nullptr), resources_(resources), copyBuffer(2, samplesPerBlock_)
 {
     for (unsigned i = 0; i < config::filtersPerVoice; ++i)
         filters_.emplace_back(resources);
@@ -383,6 +385,8 @@ Voice::Impl::Impl(int voiceNumber, Resources& resources)
 
     gainSmoother_.setSmoothing(config::gainSmoothing, sampleRate_);
     xfadeSmoother_.setSmoothing(config::xfadeSmoothing, sampleRate_);
+
+    copyBuffer.resize(samplesPerBlock_);
 
     // prepare curves
     getSCurve();
@@ -767,6 +771,7 @@ void Voice::setSamplesPerBlock(int samplesPerBlock) noexcept
 {
     Impl& impl = *impl_;
     impl.samplesPerBlock_ = samplesPerBlock;
+    impl.copyBuffer.resize(samplesPerBlock);
     impl.powerFollower_.setSamplesPerBlock(samplesPerBlock);
 }
 
@@ -818,6 +823,14 @@ void Voice::renderBlock(AudioSpan<float, 2> buffer) noexcept
         // Should be OK but just in case;
         impl.age_ = min(impl.age_ - *impl.triggerDelay_, 0);
         impl.triggerDelay_ = absl::nullopt;
+    }
+
+    
+    const int min_num_channels = min(buffer.getNumChannels(), impl.copyBuffer.getNumChannels());
+    for (auto i = 0; i < min_num_channels; ++i)
+    {
+        absl::Span<float> input_span = buffer.getSpan(i);
+        sfz::copy(input_span.data(), impl.copyBuffer.channelWriter(i), input_span.size());
     }
 
 #if 0
@@ -2091,6 +2104,19 @@ int Voice::getAge() const noexcept
 {
     Impl& impl = *impl_;
     return impl.age_;
+}
+
+void Voice::setAge(int numframes) noexcept
+{
+    Impl& impl = *impl_;
+    impl.age_ = numframes;
+}
+
+void Voice::renderBlockCopy(AudioSpan<float, 2> p_out) noexcept
+{
+    Impl& impl = *impl_;
+    AudioSpan<float, 2> copyspan(impl.copyBuffer);
+    p_out.add(copyspan);
 }
 
 double Voice::getLastDataDuration() const noexcept

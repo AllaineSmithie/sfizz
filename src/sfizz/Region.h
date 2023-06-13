@@ -230,6 +230,8 @@ struct Region {
      */
     absl::optional<ModKey::Parameters> ccModParameters(int cc, ModId id, uint8_t N = 0, uint8_t X = 0, uint8_t Y = 0, uint8_t Z = 0) const noexcept;
 
+    float sampleRate = 44100.0; // original file's samplerate
+
     const NumericId<Region> id;
 
     // Sound source: sample playback

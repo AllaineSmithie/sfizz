@@ -280,7 +280,7 @@ struct Synth::Impl final: public Parser::Listener {
     std::map<int, size_t> ccLabelsMap_;
     std::vector<NoteNamePair> keyLabels_;
     std::map<int, size_t> keyLabelsMap_;
-    BitArray<128> keySlots_;
+    BitArray<MAX_NOTES> keySlots_;
     BitArray<128> swLastSlots_;
     BitArray<128> sustainOrSostenuto_;
     std::vector<NoteNamePair> keyswitchLabels_;
@@ -302,11 +302,11 @@ struct Synth::Impl final: public Parser::Listener {
     RegionSet* currentSet_ { nullptr };
     std::vector<RegionSetPtr> sets_;
 
-    std::array<LayerViewVector, 128> lastKeyswitchLists_;
-    std::array<LayerViewVector, 128> downKeyswitchLists_;
-    std::array<LayerViewVector, 128> upKeyswitchLists_;
+    std::array<LayerViewVector, MAX_NOTES> lastKeyswitchLists_;
+    std::array<LayerViewVector, MAX_NOTES> downKeyswitchLists_;
+    std::array<LayerViewVector, MAX_NOTES> upKeyswitchLists_;
     LayerViewVector previousKeyswitchLists_;
-    std::array<LayerViewVector, 128> noteActivationLists_;
+    std::array<LayerViewVector, MAX_NOTES> noteActivationLists_;
     std::array<LayerViewVector, config::numCCs> ccActivationLists_;
 
     // Effect factory and buses
@@ -386,6 +386,7 @@ struct Synth::Impl final: public Parser::Listener {
     }
 
     bool playheadMoved_ { false };
+    bool modMatrixBegan_{ false }; // RJ 12.06.23
 };
 
 } // namespace sfz

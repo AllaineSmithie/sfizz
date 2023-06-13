@@ -19,7 +19,7 @@ void sfz::MidiState::noteOnEvent(int delay, int noteNumber, float velocity) noex
     ASSERT(noteNumber >= 0 && noteNumber <= 127);
     ASSERT(velocity >= 0 && velocity <= 1.0);
 
-    if (noteNumber >= 0 && noteNumber < 128) {
+    if (noteNumber >= 0 && noteNumber < MAX_NOTES) {
         float keydelta { 0 };
 
         if (lastNotePlayed >= 0) {
@@ -52,7 +52,7 @@ void sfz::MidiState::noteOffEvent(int delay, int noteNumber, float velocity) noe
     ASSERT(noteNumber >= 0 && noteNumber <= 127);
     ASSERT(velocity >= 0.0 && velocity <= 1.0);
     UNUSED(velocity);
-    if (noteNumber >= 0 && noteNumber < 128) {
+    if (noteNumber >= 0 && noteNumber < MAX_NOTES) {
         noteOffTimes[noteNumber] = internalClock + static_cast<unsigned>(delay);
         ccEvent(delay, ExtendedCCs::noteOffVelocity, velocity);
         ccEvent(delay, ExtendedCCs::keyboardNoteNumber, normalize7Bits(noteNumber));
@@ -67,7 +67,7 @@ void sfz::MidiState::noteOffEvent(int delay, int noteNumber, float velocity) noe
 
 void sfz::MidiState::allNotesOff(int delay) noexcept
 {
-    for (int note = 0; note < 128; note++)
+    for (int note = 0; note < MAX_NOTES; note++)
         noteOffEvent(delay, note, 0.0f);
 }
 
@@ -124,8 +124,8 @@ void sfz::MidiState::setSamplesPerBlock(int samplesPerBlock) noexcept
 
 float sfz::MidiState::getNoteDuration(int noteNumber, int delay) const
 {
-    ASSERT(noteNumber >= 0 && noteNumber < 128);
-    if (noteNumber < 0 || noteNumber >= 128)
+    ASSERT(noteNumber >= 0 && noteNumber < MAX_NOTES);
+    if (noteNumber < 0 || noteNumber >= MAX_NOTES)
         return 0.0f;
 
 #if 0

@@ -232,7 +232,40 @@ public:
      * @since 0.2.0
      */
     int getNumRegions() const noexcept;
+     
+    /**
+    * @brief Return the id of region.
+    * @11.06.23 RJ
+    */    
+    const int getRegionID(std::string path) const noexcept;
+    
+    /**
+    * @brief Returns true if the region could be player successfully.
+    * @11.06.23 RJ
+    */    
+    bool playRegionByID(const int id) noexcept;
 
+    /**
+    * @brief Returns true if the region could be stopped successfully.
+    * @11.06.23 RJ
+    */
+    bool stopRegionByID(const int id) noexcept;
+
+    /**
+    * @brief Renders a copy of the temporary stored voice-buffer
+    * @11.06.23 RJ
+    */
+    bool getVoiceBufferCopy(const int p_region_id, float** p_out, int numChannels, size_t numSamples) noexcept;
+
+    /**
+    * @brief sets/returns the current buffer frames position of the voice
+    * @11.06.23 RJ
+    */
+    void setVoicePosition(const int region_id, const int numframes) noexcept;
+    int getVoicePosition(const int p_region_id) const noexcept;
+    size_t getRegionLengthSamples(const int p_region_id) const noexcept;
+    float getRegionLengthSeconds(const int region_id) const noexcept;
+    
     /**
      * @brief Return the current number of groups loaded.
      * @since 0.2.0
@@ -771,6 +804,7 @@ public:
      * - @b RT: the function must be invoked from the Real-time thread
      */
     void renderBlock(float** buffers, size_t numFrames, int numOutputs = 1) noexcept;
+    void renderVoiceBlock(const int region_id, float** buffers, size_t numSamples, int numOutputs) noexcept;
 
     /**
      * @brief Return the number of active voices.

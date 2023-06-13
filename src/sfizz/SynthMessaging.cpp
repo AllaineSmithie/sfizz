@@ -103,13 +103,13 @@ void sfz::Synth::dispatchMessage(Client& client, int delay, const char* path, co
         //----------------------------------------------------------------------
 
         MATCH("/key/slots", "") {
-            const BitArray<128>& keys = impl.keySlots_;
+            const BitArray<MAX_NOTES>& keys = impl.keySlots_;
             sfizz_blob_t blob { keys.data(), static_cast<uint32_t>(keys.byte_size()) };
             client.receive<'b'>(delay, path, &blob);
         } break;
 
         MATCH("/key&/label", "") {
-            if (indices[0] >= 128)
+            if (indices[0] >= MAX_NOTES)
                 break;
             const std::string* label = impl.getKeyLabel(indices[0]);
             client.receive<'s'>(delay, path, label ? label->c_str() : "");
@@ -1365,34 +1365,6 @@ void sfz::Synth::dispatchMessage(Client& client, int delay, const char* path, co
             GET_REGION_OR_BREAK(indices[0])
             GET_FILTER_OR_BREAK(indices[1])
             client.receive<'f'>(delay, path, filter.cutoff);
-        } break;
-
-        MATCH("/region&/filter&/cutoff_cc&", "") {
-            GET_REGION_OR_BREAK(indices[0])
-            const auto depth = region.ccModDepth(indices[2], ModId::FilCutoff, indices[1]);
-            if (depth)
-                client.receive<'f'>(delay, path, *depth);
-        } break;
-
-        MATCH("/region&/filter&/cutoff_curvecc&", "") {
-            GET_REGION_OR_BREAK(indices[0])
-            const auto params = region.ccModParameters(indices[2], ModId::FilCutoff, indices[1]);
-            if (params)
-                client.receive<'i'>(delay, path, params->curve);
-        } break;
-
-        MATCH("/region&/filter&/cutoff_stepcc&", "") {
-            GET_REGION_OR_BREAK(indices[0])
-            const auto params = region.ccModParameters(indices[2], ModId::FilCutoff, indices[1]);
-            if (params)
-                client.receive<'i'>(delay, path, params->step);
-        } break;
-
-        MATCH("/region&/filter&/cutoff_smoothcc&", "") {
-            GET_REGION_OR_BREAK(indices[0])
-            const auto params = region.ccModParameters(indices[2], ModId::FilCutoff, indices[1]);
-            if (params)
-                client.receive<'i'>(delay, path, params->smooth);
         } break;
 
         MATCH("/region&/filter&/resonance", "") {

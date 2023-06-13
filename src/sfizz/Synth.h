@@ -91,7 +91,6 @@ public:
         ProcessLive,
         ProcessFreewheeling,
     };
-
     /**
      * @brief Empties the current regions and load a new SFZ file into the synth.
      *
@@ -171,12 +170,42 @@ public:
      * @return int
      */
     int getNumRegions() const noexcept;
+
+    /**
+    * @brief Return the id of region.
+    * 
+    * @11.06.23 RJ
+    */
+    const int getRegionID(std::string path) const noexcept;
+    /**
+    * @brief Returns true if the region could be player successfully.
+    * 
+    * @11.06.23 RJ
+    */
+    bool playRegionByID(const int id) noexcept;
+    /**
+    * @brief Returns true if the region could be stopped successfully.
+    * 
+    * @11.06.23 RJ
+    */
+    bool stopRegionByID(const int id) noexcept;
     /**
      * @brief Get the current number of groups loaded
      *
      * @return int
      */
     int getNumGroups() const noexcept;
+
+    /**
+     * @brief sets/returns the current voice position in frames
+     *
+     * @return int
+     * RJ 11.06.23
+     */
+    void setVoicePosition(const int region_id, const int numframes) noexcept;
+    int getVoicePosition(const int region_id) const noexcept;
+    size_t getRegionLengthSamples(const int region_id) const noexcept;
+    float getRegionLengthSeconds(const int region_id) const noexcept;
     /**
      * @brief Get the current number of masters loaded
      *
@@ -199,7 +228,7 @@ public:
      * @param id
      * @return Layer*
      */
-    Layer* getLayerById(NumericId<Region> id) noexcept;
+    const Layer* getLayerById(NumericId<Region> id) noexcept;
     /**
      * @brief Find the region which is associated with the given identifier.
      *
@@ -304,6 +333,7 @@ public:
      * @param sampleRate
      */
     void setSampleRate(float sampleRate) noexcept;
+    
     /**
      * @brief Get the default resampling quality for the given mode.
      *
@@ -548,6 +578,20 @@ public:
      * stereo buffer.
      */
     void renderBlock(AudioSpan<float> buffer) noexcept;
+    void renderVoiceBlock(const int region_id, AudioSpan<float> buffer) noexcept;
+
+    /**
+     * @brief Render an block of audio data of only the requested region id
+     * if the region id is not inside a voice it will do nothing. This call will reset
+     * the synth in its waiting state for the next batch of events. The size of
+     * the block is integrated in the AudioSpan object. You can build an
+     * AudioSpan implicitely from a large number of source objects; check the
+     * AudioSpan reference for more precision.
+     *
+     * @param buffer the buffer to write the current block into; this should be a
+     * stereo buffer.
+     */
+    bool getVoiceBlockCopy(const int region_id, AudioSpan<float> buffer) noexcept;
 
     /**
      * @brief Get the number of active voices

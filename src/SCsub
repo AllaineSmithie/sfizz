@@ -1,0 +1,219 @@
+Import('env')
+module_env = env.Clone()
+
+prepath = "#modules/deadline_audio_engine/sfizz/"
+include_paths = [prepath + "external/abseil-cpp", 
+				prepath + "external/atomic_queue/include",
+				prepath + "external/cephes/src",
+				prepath + "external/cxxopts",
+				prepath + "external/filesystem/include",
+				prepath + "external/fmidi/sources",
+				prepath + "external/jsl/include",
+				prepath + "external/simde",
+				prepath + "external/st_audiofile",
+				prepath + "external/st_audiofile/src",
+				prepath + "external/threadpool",
+				prepath + "src/external/cpuid/platform/src",
+				prepath + "src/external/cpuid/src",
+				prepath + "src/external/hiir",
+				prepath + "src/external/kiss_fft",
+				prepath + "src/external/pugixml/src",
+				prepath + "src/external/spline",
+				prepath + "src/external/tunings/include",
+				prepath + "src/sfizz/utility",
+				prepath + "src/sfizz/utility/bit_array",
+				prepath + "src/sfizz/utility/c++17",
+				prepath + "src/sfizz/utility/spin_mutex",
+				prepath + "src/sfizz",
+				prepath + "src",]
+
+module_env.Prepend(CPPPATH=include_paths)
+module_env.add_source_files(env.modules_sources, "sfizz/sfizz.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Synth.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FileId.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FilePool.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FileMetadata.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/AudioReader.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FilterPool.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/EQPool.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/RegionStateful.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Region.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Voice.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/ScopedFTZ.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/MidiState.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Oversampler.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/ADSREnvelope.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/SfzFilter.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Curve.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Smoothers.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Wavetables.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Tuning.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/RegionSet.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/PolyphonyGroup.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/VoiceManager.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/VoiceStealing.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/RTSemaphore.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Panning.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Effects.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/LFO.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/LFODescription.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/PowerFollower.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FlexEGDescription.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/FlexEnvelope.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/BeatClock.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Metronome.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/SynthMessaging.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/WindowedSinc.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Interpolators.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Layer.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/Resources.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/ModId.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/ModKey.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/ModKeyHash.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/ModMatrix.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/ADSREnvelope.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/ChannelAftertouch.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/PolyAftertouch.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/Controller.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/FlexEnvelope.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/modulations/sources/LFO.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Nothing.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Filter.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Eq.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Apan.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Lofi.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Limiter.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Compressor.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Gate.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Disto.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Strings.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Fverb.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Rectify.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Gain.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/Width.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantString.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantStringSSE.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantStringAVX.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantArray.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantArraySSE.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantArrayAVX.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/utility/c++17/AlignedMemorySupport.cpp")
+
+module_env.add_source_files(env.modules_sources, "sfizz/SIMDHelpers.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/simd/HelpersNEON.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/simd/HelpersSSE.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/simd/HelpersAVX.cpp")
+
+archx86list = ["x86_64","amd64","AMD64","x64","X64","i.86","x86","X86"]
+
+# For CPU-dispatched X86 sources
+# Always build them for all X86 targets.
+if module_env["arch"] in archx86list:
+	# on GCC, it requires to set ISA support flags on individual files
+	# to be able to use the intrinsics
+	if module_env["platform"] != "windows":
+		module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantStringAVX.cpp")
+		module_env.add_source_files(env.modules_sources, "sfizz/effects/impl/ResonantArrayAVX.cpp")
+		module_env.add_source_files(env.modules_sources, "sfizz/simd/HelpersAVX.cpp")
+		module_env.Append( CCFLAGS=["-mavx"])
+
+
+module_env.Append(CPPDEFINES=["_USE_MATH_DEFINES","NOMINMAX","GHC_FILESYSTEM_FWD=1"])
+
+module_env.disable_warnings()
+
+if not env.dev_build:
+    module_env.Append(CPPDEFINES=["SFIZZ_ENABLE_RELEASE_ASSERT=1"])
+    
+"""
+prepath = "sfizz/"
+include_paths = [prepath + "external/abseil-cpp", 
+				prepath + "external/atomic_queue/include",
+				prepath + "external/cephes/src",
+				prepath + "external/cxxopts",
+				prepath + "external/filesystem/include",
+				prepath + "external/fmidi/sources",
+				prepath + "external/jsl/include",
+				prepath + "external/simde",
+				prepath + "external/st_audiofile",
+				prepath + "external/st_audiofile/src",
+				prepath + "external/threadpool",
+				prepath + "src/external/cpuid/platform/src",
+				prepath + "src/external/cpuid/src",
+				prepath + "src/external/hiir",
+				prepath + "src/external/kiss_fft",
+				prepath + "src/external/pugixml/src",
+				prepath + "src/external/spline",
+				prepath + "src/external/tunings/include",
+				prepath + "src/sfizz/utility",
+				prepath + "src/sfizz/utility/bit_array",
+				prepath + "src/sfizz/utility/c++17",
+				prepath + "src/sfizz/utility/spin_mutex",
+				prepath + "src/sfizz",
+				prepath + "src",]
+module_env.Append(CPPPATH=include_paths)
+
+
+sfizz_sources = ["sfizz/ADSREnvelope.cpp",
+			    "sfizz/AudioReader.cpp",
+			    "sfizz/BeatClock.cpp",
+			    "sfizz/Curve.cpp",
+			    "sfizz/Defaults.cpp",
+			    "sfizz/Effects.cpp",
+			    "sfizz/EQPool.cpp",
+			    "sfizz/FileId.cpp",
+			    "sfizz/FilePool.cpp",
+			    "sfizz/FileMetadata.cpp",
+			    "sfizz/FilterPool.cpp",
+			    "sfizz/FlexEGDescription.cpp",
+			    "sfizz/FlexEnvelope.cpp",
+			    "sfizz/Interpolators.cpp",
+			    "sfizz/Layer.cpp",
+			    "sfizz/LFO.cpp",
+			    "sfizz/LFODescription.cpp",
+			    "sfizz/Messaging.cpp",
+			    "sfizz/Metronome.cpp",
+			    "sfizz/MidiState.cpp",
+			    "sfizz/Opcode.cpp",
+			    "sfizz/OpcodeCleanup.cpp",
+			    "sfizz/Oversampler.cpp",
+			    "sfizz/Panning.cpp",
+			    "sfizz/PolyphonyGroup.cpp",
+			    "sfizz/PowerFollower.cpp",
+			    "sfizz/Region.cpp",
+			    "sfizz/RegionSet.cpp",
+			    "sfizz/RegionStateful.cpp",
+			    "sfizz/Resources.cpp",
+			    "sfizz/RTSemaphore.cpp",
+			    "sfizz/ScopedFTZ.cpp",
+				"sfizz/sfizz.cpp",
+			    "sfizz/SfzFilter.cpp",
+			    "sfizz/SIMDHelpers.cpp",
+			    "sfizz/Smoothers.cpp",
+			    "sfizz/Synth.cpp",
+			    "sfizz/SynthMessaging.cpp",
+			    "sfizz/Tuning.cpp",
+			    "sfizz/Voice.cpp",
+			    "sfizz/VoiceManager.cpp",
+			    "sfizz/VoiceStealing.cpp",
+			    "sfizz/Wavetables.cpp",
+			    "sfizz/WindowedSinc.cpp"]
+
+module_env.add_source_files(env.modules_sources, sfizz_sources)
+
+
+# module_env.add_source_files(env.modules_sources, prepath + "src/sfizz/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/effects/impl/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/effects/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/import/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/import/foreign_instruments/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/modulations/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/modulations/sources*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/parser/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/simd/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/utility/c++17/*.cpp")
+module_env.add_source_files(env.modules_sources, "sfizz/src/sfizz/utility/spin_mutex/*.cpp")
+
+
+
+"""

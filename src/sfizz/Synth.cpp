@@ -41,6 +41,7 @@
 #include <iostream>
 #include <random>
 #include <utility>
+#include "Synth.h"
 
 namespace sfz {
 
@@ -637,6 +638,7 @@ void Synth::Impl::prepareSfzLoad(const fs::path& path)
     }
 }
 
+
 bool Synth::loadSfzFile(const fs::path& file)
 {
     Impl& impl = *impl_;
@@ -771,6 +773,7 @@ void Synth::Impl::finalizeSfzLoad()
 
         if (!region.isOscillator()) {
             region.sampleEnd = min(region.sampleEnd, fileInformation->end);
+            region.sampleRate = fileInformation->sampleRate;
 
             if (fileInformation->hasLoop) {
                 if (region.loopRange.getStart() == Default::loopStart)
@@ -836,7 +839,7 @@ void Synth::Impl::finalizeSfzLoad()
             }
         }
 
-        for (auto note = 0; note < 128; note++) {
+        for (auto note = 0; note < MAX_NOTES; note++) {
             if (region.keyRange.containsWithEnd(note))
                 noteActivationLists_[note].push_back(&layer);
         }
@@ -1094,6 +1097,67 @@ void Synth::setSampleRate(float sampleRate) noexcept
     }
 }
 
+void Synth::renderVoiceBlock(const int region_id, AudioSpan<float> buffer) noexcept
+{
+    const size_t numFrames = buffer.getNumFrames();
+    if (numFrames < 1) {
+        CHECKFALSE;
+        return;
+    }
+
+    Impl& impl = *impl_;
+    ScopedFTZ ftz;
+
+    /*if (!impl.modMatrixBegan_)
+    {
+        ModMatrix& mm = impl.resources_.getModMatrix();
+        mm.beginCycle(numFrames);
+
+        BeatClock& bc = impl.resources_.getBeatClock();
+        bc.beginCycle(numFrames);
+
+        impl.modMatrixBegan_ = true;
+    }
+    */
+    MidiState& midiState = impl.resources_.getMidiState();
+
+    const SynthConfig& synthConfig = impl.resources_.getSynthConfig();
+    FilePool& filePool = impl.resources_.getFilePool();
+
+
+    const auto now = highResNow();
+    const auto timeSinceLastCollection =
+        std::chrono::duration_cast<std::chrono::seconds>(now - impl.lastGarbageCollection_);
+
+    if (timeSinceLastCollection.count() > config::fileClearingPeriod) {
+        impl.lastGarbageCollection_ = now;
+        filePool.triggerGarbageCollection();
+    }
+    NumericId<Region> r_id(region_id);
+    { // Main render block
+        for (auto& voice : impl.voiceManager_) {
+            if (voice.isFree())
+                continue;
+
+            const Region* region = voice.getRegion();
+            ASSERT(region != nullptr);
+            if (region->id != r_id)
+                continue;
+
+            voice.renderBlock(buffer);
+
+            if (voice.toBeCleanedUp())
+                voice.reset();
+            break;
+        }
+    }
+
+    ASSERT(!hasNanInf(buffer.getConstSpan(0)));
+    ASSERT(!hasNanInf(buffer.getConstSpan(1)));
+    SFIZZ_CHECK(isReasonableAudio(buffer.getConstSpan(0)));
+    SFIZZ_CHECK(isReasonableAudio(buffer.getConstSpan(1)));
+}
+
 void Synth::renderBlock(AudioSpan<float> buffer) noexcept
 {
     Impl& impl = *impl_;
@@ -1177,12 +1241,23 @@ void Synth::renderBlock(AudioSpan<float> buffer) noexcept
             const auto& effectBuses = impl.getEffectBusesForOutput(region->output);
 
             voice.renderBlock(*tempSpan);
+
+            /*for (auto& l : listener)
+            {
+                if (l.on_buffer_changed(voice.getRegion()->id.number(), tempSpan->operator const float* const* (), voice.getAge()))
+                {
+                    buffer_token = true;
+                    break;
+                }
+            }*/
+            
             for (size_t i = 0, n = effectBuses.size(); i < n; ++i) {
                 if (auto& bus = effectBuses[i]) {
                     float addGain = region->getGainToEffectBus(i);
                     bus->addToInputs(*tempSpan, addGain, numFrames);
                 }
             }
+            
             callbackBreakdown.data += voice.getLastDataDuration();
             callbackBreakdown.amplitude += voice.getLastAmplitudeDuration();
             callbackBreakdown.filters += voice.getLastFilterDuration();
@@ -1261,7 +1336,7 @@ void Synth::noteOn(int delay, int noteNumber, int velocity) noexcept
 
 void Synth::hdNoteOn(int delay, int noteNumber, float normalizedVelocity) noexcept
 {
-    ASSERT(noteNumber < 128);
+    ASSERT(noteNumber < MAX_NOTES);
     ASSERT(noteNumber >= 0);
     Impl& impl = *impl_;
     ScopedTiming logger { impl.dispatchDuration_, ScopedTiming::Operation::addToDuration };
@@ -1280,7 +1355,7 @@ void Synth::noteOff(int delay, int noteNumber, int velocity) noexcept
 
 void Synth::hdNoteOff(int delay, int noteNumber, float normalizedVelocity) noexcept
 {
-    ASSERT(noteNumber < 128);
+    ASSERT(noteNumber < MAX_NOTES);
     ASSERT(noteNumber >= 0);
     Impl& impl = *impl_;
     ScopedTiming logger { impl.dispatchDuration_, ScopedTiming::Operation::addToDuration };
@@ -1659,6 +1734,78 @@ int Synth::getNumGroups() const noexcept
     return impl.numGroups_;
 }
 
+int Synth::getVoicePosition(const int region_id) const noexcept
+{
+    Impl& impl = *impl_;
+    for (auto& voice : impl.voiceManager_)
+    {
+        const Region* region = voice.getRegion();
+        if (!region)
+            continue;
+
+        ASSERT(region != nullptr);
+        if (region->id.number() == region_id)
+        {
+            return voice.getAge();
+        }
+    }
+    return 0;
+}
+
+bool Synth::getVoiceBlockCopy(const int region_id, AudioSpan<float> buffer) noexcept
+{
+    Impl& impl = *impl_;
+    for (auto& voice : impl.voiceManager_)
+    {
+        const Region* region = voice.getRegion();
+        if (!region)
+            continue;
+
+        ASSERT(region != nullptr);
+        if (region->id.number() == region_id)
+        {
+            voice.renderBlockCopy(buffer);
+            return true;
+        }
+    }
+    return false;
+}
+
+size_t Synth::getRegionLengthSamples(const int region_id) const noexcept
+{
+    const Region* region = const_cast<Synth*>(this)->getRegionById(NumericId<Region>(region_id));
+    if (region)
+        return (size_t)region->sampleEnd;
+
+    return 0;
+}
+
+float Synth::getRegionLengthSeconds(const int region_id) const noexcept
+{
+    const Region* region = const_cast<Synth*>(this)->getRegionById(NumericId<Region>(region_id));
+    if (region)
+        return (float)region->sampleEnd / region->sampleRate;
+
+    return 0.0f;
+}
+
+void Synth::setVoicePosition(const int region_id, const int numframes) noexcept
+{
+    Impl& impl = *impl_;
+    for (auto& voice : impl.voiceManager_)
+    {
+        const Region* region = voice.getRegion();
+        if (!region)
+            continue;
+
+        if (region->id.number() == region_id)
+        {
+            voice.setAge(numframes);
+            return;
+        }
+    }
+}
+
 int Synth::getNumMasters() const noexcept
 {
     Impl& impl = *impl_;
@@ -1775,6 +1922,55 @@ std::string Synth::exportMidnam(absl::string_view model) const
     return std::move(writer.str());
 }
 
+// 11.06.23
+const int Synth::getRegionID(std::string path) const noexcept
+{
+    Impl& impl = *impl_;
+    for (auto& l : impl.layers_)
+    {
+        if (!l->getRegion().sampleId)
+            continue;
+
+        if (l->getRegion().sampleId->filename() == path)
+            return l->getRegion().id.number();
+    }
+    return -1;
+}
+bool Synth::playRegionByID(const int id) noexcept
+{
+    SisterVoiceRingBuilder ring;
+    Impl& impl = *impl_;
+    const NumericId<Region> _id(id);
+
+    for (std::unique_ptr<Layer>& layer : impl.layers_)
+    {
+        const Region& region = layer->getRegion();
+        if (region.id == _id)
+        {
+            TriggerEvent triggerEvent{ TriggerEventType::NoteOn, region.pitchKeycenter, region.velocityRange.getEnd() };
+            impl.startVoice(layer.get(), 0, triggerEvent, ring);
+            return true;
+        }
+    }
+    return false;
+}
+bool Synth::stopRegionByID(const int id) noexcept
+{
+    SisterVoiceRingBuilder ring;
+    Impl& impl = *impl_;
+    const NumericId<Region> _id(id);
+    for (auto& l : impl.layers_)
+    {
+        if (l->getRegion().id == _id)
+        {
+            impl.startVoice(l.get(), 0, { TriggerEventType::NoteOff, l->getRegion().pitchKeycenter, 0 }, ring);
+            return true;
+        }
+    }
+    return false;
+}
+//
+
 const Layer* Synth::getLayerView(int idx) const noexcept
 {
     Impl& impl = *impl_;
@@ -1805,7 +2001,7 @@ const PolyphonyGroup* Synth::getPolyphonyGroupView(int idx) const noexcept
     return impl.voiceManager_.getPolyphonyGroupView(idx);
 }
 
-Layer* Synth::getLayerById(NumericId<Region> id) noexcept
+const Layer* Synth::getLayerById(NumericId<Region> id) noexcept
 {
     Impl& impl = *impl_;
     const size_t size = impl.layers_.size();
@@ -1826,7 +2022,7 @@ Layer* Synth::getLayerById(NumericId<Region> id) noexcept
 
 const Region* Synth::getRegionById(NumericId<Region> id) const noexcept
 {
-    Layer* layer = const_cast<Synth*>(this)->getLayerById(id);
+    const Layer* layer = const_cast<Synth*>(this)->getLayerById(id);
     return layer ? &layer->getRegion() : nullptr;
 }
 

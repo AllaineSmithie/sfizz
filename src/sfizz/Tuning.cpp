@@ -274,10 +274,10 @@ float StretchTuning::getRatioForFractionalKey(float key) const noexcept
     return keyDetuneRatio_[index1] * (1 - mu) + keyDetuneRatio_[index2] * mu;
 }
 
-StretchTuning StretchTuning::createFromDetuneRatios(const float detune[128])
+StretchTuning StretchTuning::createFromDetuneRatios(const float detune[MAX_NOTES])
 {
     StretchTuning t;
-    std::copy(detune, detune + 128, t.keyDetuneRatio_);
+    std::copy(detune, detune + MAX_NOTES, t.keyDetuneRatio_);
     return t;
 }
 

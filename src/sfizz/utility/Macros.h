@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define MAX_NOTES 128 // 1024
+
 #define UNUSED(x) (void)(x)
 
 #if __cplusplus > 201103L

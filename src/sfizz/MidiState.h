@@ -243,7 +243,7 @@ private:
      * @brief Store the note states
      *
      */
-    std::bitset<128> noteStates;
+    std::bitset<MAX_NOTES> noteStates;
 
     /**
      * @brief Stores the velocity of the note ons for currently

@@ -380,6 +380,9 @@ public:
      * @return
      */
     int getAge() const noexcept;
+    void setAge(int frames) noexcept;
+
+    void renderBlockCopy(AudioSpan<float, 2> buffer) noexcept;
 
     double getLastDataDuration() const noexcept;
     double getLastAmplitudeDuration() const noexcept;

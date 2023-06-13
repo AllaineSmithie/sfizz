@@ -5,6 +5,7 @@
 // If not, contact the sfizz maintainers at https://github.com/sfztools/sfizz
 
 #pragma once
+#include "utility/macros.h"
 #include "ghc/fs_std.hpp"
 #include <memory>
 
@@ -76,11 +77,11 @@ public:
     float getRatioForIntegralKey(int key) const noexcept;
     float getRatioForFractionalKey(float key) const noexcept;
 
-    static StretchTuning createFromDetuneRatios(const float detune[128]);
+    static StretchTuning createFromDetuneRatios(const float detune[MAX_NOTES]);
     static StretchTuning createRailsbackFromRatio(float stretch);
 
 private:
-    float keyDetuneRatio_[128] {};
+    float keyDetuneRatio_[MAX_NOTES] {};
 };
 
 } // namespace sfz
