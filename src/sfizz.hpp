@@ -227,23 +227,23 @@ namespace sfz
          */
         void loadStretchTuningByRatio(float ratio);
 
-        /**
-         * @brief Return the current number of regions loaded.
-         * @since 0.2.0
-         */
-        int getNumRegions() const noexcept;
-
-        /**
-        * @brief Return the id of region.
-        * @11.06.23 RJ
-        */
-        const int getRegionID(std::string path) const noexcept;
-
-        /**
-        * @brief Returns the voice id if the region could be player successfully, -1 if not.
-        * @13.06.23 RJ
-        */
-        int playRegionByID(const int id) noexcept;
+    /**
+     * @brief Return the current number of regions loaded.
+     * @since 0.2.0
+     */
+    int getNumRegions() const noexcept;
+     
+    /**
+    * @brief Return the id of region.
+    * @11.06.23 RJ
+    */    
+    const int getRegionID(const std::string path) const noexcept;
+    
+    /**
+    * @brief Returns true if the region could be player successfully.
+    * @11.06.23 RJ
+    */    
+    bool playRegionByID(const int id) noexcept;
 
         /**
         * @brief Returns true if the region could be stopped successfully.
