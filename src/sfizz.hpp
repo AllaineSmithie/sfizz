@@ -243,7 +243,7 @@ namespace sfz
     * @brief Returns true if the region could be player successfully.
     * @11.06.23 RJ
     */    
-    bool playRegionByID(const int id) noexcept;
+    int playRegionByID(const int id) noexcept;
 
         /**
         * @brief Returns true if the region could be stopped successfully.
