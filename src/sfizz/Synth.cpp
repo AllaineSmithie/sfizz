@@ -778,7 +778,7 @@ namespace sfz {
 
             if (!region.isOscillator()) {
                 region.sampleEnd = min(region.sampleEnd, fileInformation->end);
-                region.sampleRate = (double)fileInformation->sampleRate;
+                region.sampleRate = (float)fileInformation->sampleRate;
 
                 if (fileInformation->hasLoop) {
                     if (region.loopRange.getStart() == Default::loopStart)
