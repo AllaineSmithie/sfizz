@@ -101,7 +101,7 @@ const int sfz::Sfizz::getRegionID(std::string path) const noexcept
     return synth->synth.getRegionID(path);
 }
 
-bool sfz::Sfizz::playRegionByID(const int id) noexcept
+int sfz::Sfizz::playRegionByID(const int id) noexcept
 {
     return synth->synth.playRegionByID(id);
 }
@@ -111,14 +111,14 @@ bool sfz::Sfizz::stopRegionByID(const int id) noexcept
     return synth->synth.stopRegionByID(id);
 }
 
-bool sfz::Sfizz::getVoiceBufferCopy(const int p_region_id, float** p_out, int numOutputs, size_t numSamples) noexcept
+bool sfz::Sfizz::getVoiceBufferCopy(const int p_voice_id, float** p_out, int numOutputs, size_t numSamples) noexcept
 {
     sfz::AudioSpan<float> bufferSpan{ p_out, static_cast<size_t>(numOutputs * 2), 0, numSamples };
-    return synth->synth.getVoiceBlockCopy(p_region_id, bufferSpan);
+    return synth->synth.getVoiceBlockCopy(p_voice_id, bufferSpan);
 }
-int sfz::Sfizz::getVoicePosition(const int p_region_id) const noexcept
+int sfz::Sfizz::getVoicePosition(const int p_voice_id) const noexcept
 {
-    return synth->synth.getVoicePosition(p_region_id);
+    return synth->synth.getVoicePosition(p_voice_id);
 }
 size_t sfz::Sfizz::getRegionLengthSamples(const int p_region_id) const noexcept
 {
@@ -306,14 +306,20 @@ void sfz::Sfizz::playbackState(int delay, int playbackState)
 
 void sfz::Sfizz::renderBlock(float** buffers, size_t numSamples, int numOutputs) noexcept
 {
-    sfz::AudioSpan<float> bufferSpan { buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
+    sfz::AudioSpan<float> bufferSpan{ buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
     synth->synth.renderBlock(bufferSpan);
 }
 
-void sfz::Sfizz::renderVoiceBlock(const int region_id, float** buffers, size_t numSamples, int numOutputs) noexcept
+void sfz::Sfizz::renderBlockEmpty(float** buffers, size_t numSamples, int numOutputs) noexcept
 {
     sfz::AudioSpan<float> bufferSpan{ buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
-    synth->synth.renderVoiceBlock(region_id, bufferSpan);
+    synth->synth.renderBlockEmpty(bufferSpan);
+}
+
+void sfz::Sfizz::renderVoiceBlock(const int voice_id, float** buffers, size_t numSamples, int numOutputs) noexcept
+{
+    sfz::AudioSpan<float> bufferSpan{ buffers, static_cast<size_t>(numOutputs * 2), 0, numSamples };
+    synth->synth.renderVoiceBlock(voice_id, bufferSpan);
 }
 
 int sfz::Sfizz::getNumActiveVoices() const noexcept
@@ -444,7 +450,7 @@ const std::vector<std::pair<uint16_t, std::string>>& sfz::Sfizz::getCCLabels() c
     return synth->synth.getCCLabels();
 }
 
-void sfz::Sfizz::ClientDeleter::operator()(Client *client) const noexcept
+void sfz::Sfizz::ClientDeleter::operator()(Client* client) const noexcept
 {
     delete client;
 }

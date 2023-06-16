@@ -162,7 +162,7 @@ struct Synth::Impl final: public Parser::Listener {
      * @param triggerEvent
      * @param ring
      */
-    void startVoice(Layer* layer, int delay, const TriggerEvent& triggerEvent, SisterVoiceRingBuilder& ring) noexcept;
+    void startVoice(Layer* layer, int delay, const TriggerEvent& triggerEvent, SisterVoiceRingBuilder& ring, int* r_id = nullptr) noexcept;
 
     /**
      * @brief Start all delayed sustain release voices of the region if necessary
