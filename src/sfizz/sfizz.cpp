@@ -96,7 +96,7 @@ int sfz::Sfizz::getNumRegions() const noexcept
 }
 
 // 11.06.23 RJ
-const int sfz::Sfizz::getRegionID(const std::string path) const noexcept
+const int sfz::Sfizz::getRegionID(const std::string& path) const noexcept
 {
     return synth->synth.getRegionID(path);
 }

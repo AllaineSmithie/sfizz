@@ -778,7 +778,7 @@ namespace sfz {
 
             if (!region.isOscillator()) {
                 region.sampleEnd = min(region.sampleEnd, fileInformation->end);
-                region.sampleRate = fileInformation->sampleRate;
+                region.sampleRate = (double)fileInformation->sampleRate;
 
                 if (fileInformation->hasLoop) {
                     if (region.loopRange.getStart() == Default::loopStart)
@@ -2028,7 +2028,7 @@ namespace sfz {
     }
 
     // 11.06.23
-    const int Synth::getRegionID(const std::string path) const noexcept
+    const int Synth::getRegionID(const std::string& path) const noexcept
     {
         Impl& impl = *impl_;
         for (auto& l : impl.layers_)

@@ -176,7 +176,7 @@ namespace sfz {
         *
         * @11.06.23 RJ
         */
-        const int getRegionID(const std::string path) const noexcept;
+        const int getRegionID(const std::string& path) const noexcept;
         /**
         * @brief Returns the voice id if the region could be player successfully, -1 if not.
         *

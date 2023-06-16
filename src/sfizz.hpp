@@ -237,7 +237,7 @@ namespace sfz
     * @brief Return the id of region.
     * @11.06.23 RJ
     */    
-    const int getRegionID(const std::string path) const noexcept;
+    const int getRegionID(const std::string& path) const noexcept;
     
     /**
     * @brief Returns true if the region could be player successfully.
