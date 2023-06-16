@@ -773,7 +773,7 @@ void Synth::Impl::finalizeSfzLoad()
 
         if (!region.isOscillator()) {
             region.sampleEnd = min(region.sampleEnd, fileInformation->end);
-            region.sampleRate = fileInformation->sampleRate;
+            region.sampleRate = (float)fileInformation->sampleRate;
 
             if (fileInformation->hasLoop) {
                 if (region.loopRange.getStart() == Default::loopStart)
@@ -1923,7 +1923,7 @@ std::string Synth::exportMidnam(absl::string_view model) const
 }
 
 // 11.06.23
-const int Synth::getRegionID(std::string path) const noexcept
+const int Synth::getRegionID(const std::string path) const noexcept
 {
     Impl& impl = *impl_;
     for (auto& l : impl.layers_)
