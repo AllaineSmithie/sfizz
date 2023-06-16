@@ -112,3 +112,4 @@ clients/sfzprint
 /src/sfizz/Tuning.windows.editor.dev.x86_64.obj
 /src/sfizz/SynthMessaging.windows.editor.dev.x86_64.obj
 /src/sfizz/Synth.windows.editor.dev.x86_64.obj
+/out/build/x64-Debug

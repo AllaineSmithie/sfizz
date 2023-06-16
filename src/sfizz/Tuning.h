@@ -5,7 +5,7 @@
 // If not, contact the sfizz maintainers at https://github.com/sfztools/sfizz
 
 #pragma once
-#include "utility/macros.h"
+#include "utility/Macros.h"
 #include "ghc/fs_std.hpp"
 #include <memory>
 
