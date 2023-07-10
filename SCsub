@@ -14,7 +14,7 @@ def mySubProcess(cmdline):
         "stderr": subprocess.PIPE,
         "startupinfo": startupinfo,
         "shell": True,
-        "encoding":'utf-8',
+        # "encoding":'utf-8',
         "errors":'ignore'
     }
     print("CMD: " + cmdline)
@@ -43,7 +43,8 @@ def mySubProcess(cmdline):
 SConscript("src/SCsub")
 
 if env.GetOption('clean'):
-    shutil.rmtree('./build/')
+    if not os.path.exists('./build/'):
+        shutil.rmtree('./build/')
 else:
     arch = "-DCMAKE_BUILD_TYPE=ALL"
     if env["arch"] == "x86_32":
