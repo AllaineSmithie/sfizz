@@ -14,7 +14,7 @@ def mySubProcess(cmdline):
         "stderr": subprocess.PIPE,
         "startupinfo": startupinfo,
         "shell": True,
-        # "encoding":'utf-8',
+        "encoding":'utf-8',
         "errors":'ignore'
     }
     print("CMD: " + cmdline)
@@ -43,7 +43,7 @@ def mySubProcess(cmdline):
 SConscript("src/SCsub")
 
 if env.GetOption('clean'):
-    if not os.path.exists('./build/'):
+    if os.path.exists('./build/'):
         shutil.rmtree('./build/')
 else:
     arch = "-DCMAKE_BUILD_TYPE=ALL"
@@ -52,9 +52,9 @@ else:
         
     if env.dev_build:
         if not os.path.exists('./build/'):
-            mySubProcess("cmake  -S . -B build -DSFIZZ_SHARED=OFF -DSFIZZ_RENDER=OFF -DSFIZZ_JACK=OFF -DPLUGIN_LV2=OFF -DPLUGIN_LV2_UI=OFF " + arch)
+            mySubProcess("cmake  -S . -B build -DSFIZZ_SHARED=OFF -DSFIZZ_RENDER=OFF -DSFIZZ_JACK=OFF " + arch)
         mySubProcess("cmake --build build --config RelWithDebInfo")
     else:
         if not os.path.exists('./build/'):
-            mySubProcess("cmake  -S . -B build -DSFIZZ_SHARED=OFF -DSFIZZ_RENDER=OFF -DSFIZZ_JACK=OFF -DPLUGIN_LV2=OFF -DPLUGIN_LV2_UI=OFF " + arch)
+            mySubProcess("cmake  -S . -B build -DSFIZZ_SHARED=OFF -DSFIZZ_RENDER=OFF -DSFIZZ_JACK=OFF " + arch)
         mySubProcess("cmake --build build --config Release")
