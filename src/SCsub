@@ -25,7 +25,7 @@ include_paths = [prepath + "external/abseil-cpp",
 				prepath + "src/sfizz/utility/c++17",
 				prepath + "src/sfizz/utility/spin_mutex",
 				prepath + "src/sfizz",
-				prepath + "src",]
+				prepath + "src"]
 
 module_env.Prepend(CPPPATH=include_paths)
 module_env.add_source_files(env.modules_sources, "sfizz/sfizz.cpp")
