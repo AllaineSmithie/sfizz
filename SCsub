@@ -5,9 +5,11 @@ import shutil
 Import('env')
 
 def mySubProcess(cmdline):
+    startupinfo = None
+    if os.name == "nt":
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
     popen_args = {
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
